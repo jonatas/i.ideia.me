@@ -5,13 +5,14 @@ class Array
 end
 
 module Enumerable
-  def usage
-    map{|k,v|[k,v.size]}.sort_by{|k,v|v}
+  def usage sort=true
+    h = map{|k,v|[k,v.size]}
+    sort ? h.sort_by{|k,v|v} : h
   end
 end
 
 class Instatistics
-  attr_accessor :images, :tags, :fans, :top_fans, :fan_tags
+  attr_accessor :images, :tags, :fans, :fan_tags
    def initialize images, add_words_as_tags=nil
      @images = images
      @tags = {}
@@ -66,7 +67,8 @@ class Instatistics
         counter[tag] ||= 0
         counter[tag] += 1
       end
-      @fan_tags[fan] = counter.delete_if{|k,v|v < 2 }.sort_by{|k,v|v}.reverse[0,limit]
+      tags = counter.delete_if{|k,v|v < 2 }.sort_by{|k,v|v}.reverse[0,limit]
+      @fan_tags[fan] = tags.to_hash if not tags.empty?
     end
   end
 
@@ -89,9 +91,20 @@ class Instatistics
   def usage
     {
       hours: @frame[:hour].usage.sort_by{|k,v|k},
-      week_day:  @frame[:week_day].usage,
+      week_day:  @frame[:week_day].to_hash.usage(false),
       month:  @frame[:month].usage.to_hash,
       year:  @frame[:year].usage.to_hash
+    }
+  end
+  
+  def to_hash
+    {
+      total_media: @images.size,
+      total_tags: @tags.size,
+      top_fans: top_fans.usage.to_hash,
+      #fan_tags: fan_tags,
+      top_tags: top_tags.usage.to_hash,
+      usage: usage
     }
   end
 
