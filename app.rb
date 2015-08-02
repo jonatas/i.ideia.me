@@ -43,17 +43,8 @@ get "/oauth/callback" do
 end
 
 get "/instatistics/:username" do
-  filter = "cache/#{params[:username]}"
-  cache_files = Dir["#{filter}*.json"]
-  all_media =
-    if cache_files.empty?
-      fetcher = InstagramUserMediaFetch.new(session[:access_token], params[:username])
-      fetcher.fetch_all_media_history
-      fetcher.all_media
-    else
-      load_user_media(filter)
-    end
-  @stats = Instatistics.new(all_media)
+  fetcher = InstagramUserMediaFetch.new(session[:access_token], params[:username])
+  @stats = Instatistics.new(fetcher.media)
   erb :"instatistics.html"
 end
 

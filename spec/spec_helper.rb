@@ -1,3 +1,5 @@
+$: << File.dirname(__FILE__)
+$: << File.join(File.dirname(__FILE__), "../")
 Dir["lib/*"].each do |file|
   load file
 end

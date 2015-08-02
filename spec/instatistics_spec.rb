@@ -1,5 +1,5 @@
 describe Instatistics do
-  let(:media) { load_user_media }
+  let(:media) { load_all_user_media }
   let(:statistics) { Instatistics.new media }
   let(:statistics_capturing_text) { Instatistics.new media, /(Lorenzo|Filho|Mandala|T[aâ]nia)/i }
 
