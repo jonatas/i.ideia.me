@@ -1,18 +1,20 @@
 require "sinatra"
+require "sinatra/reloader" if development?
 require "instagram"
 require "awesome_print"
 
 $: << File.dirname(__FILE__)
+
 require "lib/instagram_user_media_fetch"
 require "lib/instatistics"
-require "sinatra/reloader" if development?
+require "lib/load_cache_helper"
+
+include LoadCacheHelper
 
 enable :sessions
 
 CALLBACK_URL = "http://localhost:4567/oauth/callback"
 
-require "spec/load_images_from_cache_helper"
-include LoadImagesFromCacheHelper
 Instagram.configure do |config|
   config.client_id = ENV["INSTAGRAM_CLIENT_ID"]
   config.client_secret = ENV["INSTAGRAM_CLIENT_SECRET"]
