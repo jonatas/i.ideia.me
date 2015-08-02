@@ -13,38 +13,38 @@ module Enumerable
 end
 
 class Instatistics
-  attr_accessor :images, :tags, :fans, :fan_tags
-   def initialize images, add_words_as_tags=nil
-     @images = images
+  attr_accessor :media, :tags, :fans, :fan_tags
+   def initialize media, add_words_as_tags=nil
+     @media = media
      @tags = {}
      @fans = {}
      @frame = {hour: {}, week_day: {}, month: {}, year: {}}
      @days_in_week = {}
      @add_words_as_tags = add_words_as_tags
-     @images.each do |image|
-       normalize_words_to_tags image
-       process_tags image
-       process_top_fans image
-       process_timeframes image
+     @media.each do |media_entry|
+       normalize_words_to_tags media_entry
+       process_tags media_entry
+       process_top_fans media_entry
+       process_timeframes media_entry
      end
      process_fan_tags
    end
 
-   def normalize_words_to_tags image
-     if image["caption"] && @add_words_as_tags && image["caption"]["text"] =~ @add_words_as_tags
-       image["tags"] << $1
+   def normalize_words_to_tags media_entry
+     if media_entry["caption"] && @add_words_as_tags && media_entry["caption"]["text"] =~ @add_words_as_tags
+       media_entry["tags"] << $1
      end
    end
 
-   def process_tags pic
-     pic["tags"].each do |tag|
-       (tags[tag] ||= []) << pic
+   def process_tags media
+     media["tags"].each do |tag|
+       (tags[tag] ||= []) << media
      end
    end
 
-   def process_top_fans pic
-     pic["likes"]["data"].each do |like|
-       (@fans[like["username"]] ||= []) << pic
+   def process_top_fans media
+     media["likes"]["data"].each do |like|
+       (@fans[like["username"]] ||= []) << media
      end
    end
 
@@ -70,12 +70,12 @@ class Instatistics
     @fan_tags
   end
 
-  def process_timeframes image
-    time = Time.at image['created_time'].to_i
-    (@frame[:hour][time.hour] ||= []) << image
-    (@frame[:week_day][time.strftime("%a")] ||= []) << image
-    (@frame[:month][time.strftime("%B")] ||= []) << image
-    (@frame[:year][time.year] ||= []) << image
+  def process_timeframes media_entry
+    time = Time.at media_entry['created_time'].to_i
+    (@frame[:hour][time.hour] ||= []) << media_entry
+    (@frame[:week_day][time.strftime("%a")] ||= []) << media_entry
+    (@frame[:month][time.strftime("%B")] ||= []) << media_entry
+    (@frame[:year][time.year] ||= []) << media_entry
   end
 
   def timeframes
@@ -93,7 +93,7 @@ class Instatistics
   
   def to_hash
     {
-      total_media: @images.size,
+      total_media: @media.size,
       total_tags: @tags.size,
       top_fans: top_fans.usage.to_hash,
       #fan_tags: @fan_tags,

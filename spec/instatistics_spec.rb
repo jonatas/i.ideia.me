@@ -1,13 +1,13 @@
 describe Instatistics do
-  let(:images) { load_user_media }
-  let(:statistics) { Instatistics.new images }
-  let(:statistics_capturing_text) { Instatistics.new images, /(Lorenzo|Filho|Mandala|T[aâ]nia)/i }
+  let(:media) { load_user_media }
+  let(:statistics) { Instatistics.new media }
+  let(:statistics_capturing_text) { Instatistics.new media, /(Lorenzo|Filho|Mandala|T[aâ]nia)/i }
 
   it "receives user media data" do
-    expect(statistics.images).to eq(images)
+    expect(statistics.media).to eq(media)
   end
 
-  it "groups your images by tags" do
+  it "groups your media by tags" do
     expect(statistics.tags).to have_key("sunset")
   end
 
