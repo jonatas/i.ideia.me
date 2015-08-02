@@ -32,7 +32,10 @@ describe Instatistics do
 
   it "counts usage using timeframes" do
     usage = statistics.usage
-    p usage
+    expect(usage).to have_key(:hours)
+    expect(usage).to have_key(:month)
+    expect(usage).to have_key(:year)
+    expect(usage).to have_key(:week_day)
   end
 
 end

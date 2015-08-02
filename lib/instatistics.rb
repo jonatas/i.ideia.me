@@ -3,11 +3,13 @@ class Array
     inject({}) {|h,kv| h[kv.first] = kv.last;h}
   end
 end
+
 module Enumerable
   def usage
     map{|k,v|[k,v.size]}.sort_by{|k,v|v}
   end
 end
+
 class Instatistics
   attr_accessor :images, :tags, :fans, :top_fans, :fan_tags
    def initialize images, add_words_as_tags=nil
@@ -40,12 +42,12 @@ class Instatistics
      end
    end
 
-   def process_top_fans
-     @images.each do |pic|
-       pic["likes"]["data"].each do |like|
-       (@fans[like["username"]] ||= []) << pic
-       end
-     end
+  def process_top_fans
+    @images.each do |pic|
+      pic["likes"]["data"].each do |like|
+        (@fans[like["username"]] ||= []) << pic
+      end
+    end
   end
 
   def top_fans limit=10
@@ -79,9 +81,11 @@ class Instatistics
       (@frame[:year][time.year] ||= []) << image
     end
   end
+
   def timeframes
     @frame
   end
+
   def usage
     {
       hours: @frame[:hour].usage.sort_by{|k,v|k},
@@ -90,5 +94,6 @@ class Instatistics
       year:  @frame[:year].usage.to_hash
     }
   end
+
 end
 
