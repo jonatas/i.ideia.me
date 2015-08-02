@@ -1,3 +1,4 @@
+require "benchmark"
 class Array
   def to_hash
     inject({}) {|h,kv| h[kv.first] = kv.last;h}
@@ -17,39 +18,39 @@ class Instatistics
      @images = images
      @tags = {}
      @fans = {}
-     if @add_words_as_tags = add_words_as_tags
-       normalize_words_to_tags
-     end
-     process_tags
-     process_top_fans
-     process_fan_tags
-     process_timeframes
-   end
-
-   def normalize_words_to_tags
-     @images.each do |image|
-       next if not image["caption"]
-       if image["caption"]["text"] =~ @add_words_as_tags
-         image["tags"] << $1
+     @frame = {hour: {}, week_day: {}, month: {}, year: {}}
+     @days_in_week = {}
+     @add_words_as_tags = add_words_as_tags
+     time = Benchmark.realtime do
+       @images.each do |image|
+         normalize_words_to_tags image
+         process_tags image
+         process_top_fans image
+         process_timeframes image
        end
+       process_fan_tags
+     end
+
+     puts "#{time} to process statistics"
+   end
+
+   def normalize_words_to_tags image
+     if image["caption"] && @add_words_as_tags && image["caption"]["text"] =~ @add_words_as_tags
+       image["tags"] << $1
      end
    end
 
-   def process_tags
-     @images.each do |pic|
-       pic["tags"].each do |tag|
-         (tags[tag] ||= []) << pic
-       end
+   def process_tags pic
+     pic["tags"].each do |tag|
+       (tags[tag] ||= []) << pic
      end
    end
 
-  def process_top_fans
-    @images.each do |pic|
-      pic["likes"]["data"].each do |like|
-        (@fans[like["username"]] ||= []) << pic
-      end
-    end
-  end
+   def process_top_fans pic
+     pic["likes"]["data"].each do |like|
+       (@fans[like["username"]] ||= []) << pic
+     end
+   end
 
   def top_fans limit=10
     @fans.sort_by{|k,v|v.size}.reverse[0,limit]
@@ -72,16 +73,12 @@ class Instatistics
     end
   end
 
-  def process_timeframes
-    @frame = {hour: {}, week_day: {}, month: {}, year: {}}
-    @days_in_week = {}
-    @images.each do |image|
-      time = Time.at image['created_time'].to_i
-      (@frame[:hour][time.hour] ||= []) << image
-      (@frame[:week_day][time.strftime("%a")] ||= []) << image
-      (@frame[:month][time.strftime("%B")] ||= []) << image
-      (@frame[:year][time.year] ||= []) << image
-    end
+  def process_timeframes image
+    time = Time.at image['created_time'].to_i
+    (@frame[:hour][time.hour] ||= []) << image
+    (@frame[:week_day][time.strftime("%a")] ||= []) << image
+    (@frame[:month][time.strftime("%B")] ||= []) << image
+    (@frame[:year][time.year] ||= []) << image
   end
 
   def timeframes
@@ -107,6 +104,5 @@ class Instatistics
       usage: usage
     }
   end
-
 end
 
