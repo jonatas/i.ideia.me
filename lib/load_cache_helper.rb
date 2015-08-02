@@ -1,5 +1,5 @@
 require "json"
-module LoadImagesFromCacheHelper
+module LoadCacheHelper
   def load_user_media from="spec/fixtures/page"
     info = []
     Dir["#{from}*.json" ].each do |file|

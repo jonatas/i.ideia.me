@@ -1,7 +1,3 @@
-Dir["spec/*_helper.rb"].each do |file|
-  next if file =~ /spec_helper/
-  load file
-end
 Dir["lib/*"].each do |file|
   load file
 end
@@ -12,5 +8,5 @@ RSpec.configure do |config|
   config.mock_with :rspec do |mocks|
     mocks.verify_partial_doubles = true
   end
-  config.include LoadImagesFromCacheHelper
+  config.include LoadCacheHelper
 end
