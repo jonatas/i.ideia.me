@@ -1,3 +1,4 @@
+require "benchmark"
 class Array
   def to_hash
     inject({}) {|h,kv| h[kv.first] = kv.last;h}
@@ -17,6 +18,7 @@ class Instatistics
      @images = images
      @tags = {}
      @fans = {}
+     p Benchmark.realtime {
      if @add_words_as_tags = add_words_as_tags
        normalize_words_to_tags
      end
@@ -24,6 +26,7 @@ class Instatistics
      process_top_fans
      process_fan_tags
      process_timeframes
+}
    end
 
    def normalize_words_to_tags
