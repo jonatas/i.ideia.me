@@ -1,5 +1,5 @@
 describe Instatistics do
-  let(:images) { load_user_media_from_fixtures }
+  let(:images) { load_user_media }
   let(:statistics) { Instatistics.new images }
   let(:statistics_capturing_text) { Instatistics.new images, /(Lorenzo|Filho|Mandala|T[aâ]nia)/i }
 
@@ -36,6 +36,12 @@ describe Instatistics do
     expect(usage).to have_key(:month)
     expect(usage).to have_key(:year)
     expect(usage).to have_key(:week_day)
+  end
+
+  it "resumes all things on to_hash method" do
+    info = statistics.to_hash
+    expect(info).to have_key(:usage)
+    expect(info).to have_key(:top_fans)
   end
 
 end
