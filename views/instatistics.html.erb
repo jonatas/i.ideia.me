@@ -1,7 +1,7 @@
 <h1><%= { username: @params["username"]}.ai(html: true) %></h1>
 <div class="container-fluid">
    <div class="row">
-     <h1></h1>
+     <h1>Inspect statistics</h1>
 
      <div class="well">
        <%= @stats.to_hash.ai( html: true) %>
@@ -12,6 +12,7 @@
 
 <script>
  window.stats = <%= @stats.to_hash.to_json %>;
+ window.usage = <%= @stats.usage.to_json %>;
  window.media = <%= @stats.media.to_json %>;
 </script>
 

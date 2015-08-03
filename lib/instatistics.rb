@@ -97,8 +97,8 @@ class Instatistics
       total_tags: @tags.size,
       top_fans: top_fans.usage.to_hash,
       #fan_tags: @fan_tags,
-      top_tags: top_tags.usage.to_hash,
-      usage: usage
+      top_tags: top_tags.usage.to_hash
+      #usage: usage
     }
   end
 end

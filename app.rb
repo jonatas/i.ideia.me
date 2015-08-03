@@ -28,6 +28,18 @@ helpers do
   end
 end
 
+get '/application.js' do
+  coffee :application
+end
+
+get '/jquery.min.js' do
+  content_type 'application/javascript'
+  IO.read("bower_components/jquery/dist/jquery.min.js")
+end
+get '/d3.min.js' do
+  content_type 'application/javascript'
+  IO.read("bower_components/d3/d3.min.js")
+end
 get "/" do
   '<a href="/oauth/connect">Connect with Instagram</a>'
 end
