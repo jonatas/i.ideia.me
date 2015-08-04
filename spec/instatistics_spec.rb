@@ -40,7 +40,6 @@ describe Instatistics do
 
   it "resumes all things on to_hash method" do
     info = statistics.to_hash
-    expect(info).to have_key(:usage)
     expect(info).to have_key(:top_fans)
   end
 

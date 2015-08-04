@@ -52,7 +52,9 @@ class InstagramUserMediaFetch
     while not media_entries.empty?
       @media += media_entries
       media_entries = client.user_recent_media @user["id"],  max_id: media_entries.last["id"]
-      File.open("cache/#{@username}_#{page_count += 1}.json", "w+") {|f|f.puts media_entries.to_json}
+      cache_file = "cache/#{@username}_#{page_count += 1}.json"
+      File.open(cache_file, "w+") {|f|f.puts media_entries.to_json}
+      puts "writing  #{cache_file}"
     end
   end
 end
