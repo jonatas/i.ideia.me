@@ -36,10 +36,17 @@ get '/jquery.min.js' do
   content_type 'application/javascript'
   IO.read("bower_components/jquery/dist/jquery.min.js")
 end
+
 get '/d3.min.js' do
   content_type 'application/javascript'
   IO.read("bower_components/d3/d3.min.js")
 end
+
+get '/instajam.min.js' do
+  content_type 'application/javascript'
+  IO.read("bower_components/instajam/dist/instajam.min.js")
+end
+
 get "/" do
   '<a href="/oauth/connect">Connect with Instagram</a>'
 end
@@ -50,7 +57,7 @@ end
 
 get "/oauth/callback" do
   response = Instagram.get_access_token(params[:code], :redirect_uri => CALLBACK_URL)
-  puts session[:access_token] = response.access_token
+  session[:access_token] = response.access_token
   redirect "/instatistics/#{client.user.username}"
 end
 

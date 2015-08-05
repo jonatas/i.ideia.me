@@ -7,7 +7,13 @@
   <body>
     <%= yield %>
   </body>
+  <script type="text/javascript" charset="utf-8">
+    window.INSTAGRAM_CLIENT_ID = <%= ENV['INSTAGRAM_CLIENT_ID'].inspect %>;
+    window.INSTAGRAM_REDIRECT_URI = <%= CALLBACK_URL.inspect %>;
+    localStorage.setItem('instagram_access_token', <%= session[:access_token].inspect %>);
+  </script>
   <script type="text/javascript" charset="utf-8" src="/jquery.min.js"></script>
   <script type="text/javascript" charset="utf-8" src="/d3.min.js"></script>
+  <script type="text/javascript" charset="utf-8" src="/instajam.min.js"></script>
   <script type="text/javascript" charset="utf-8" src="/application.js" ></script>
 </html>

@@ -1,4 +1,8 @@
 $(document).ready ->
+  window.insta = Instajam.init
+    clientId: INSTAGRAM_CLIENT_ID,
+    redirectUri: INSTAGRAM_REDIRECT_URI,
+    scope: ['basic', 'comments']
   window.years = ([year,size] for year,size of usage.year)
   plotUsage = (data, title) ->
     h = 250
