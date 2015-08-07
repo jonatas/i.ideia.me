@@ -1,18 +1,26 @@
-<h1><%= { username: @params["username"]}.ai(html: true) %></h1>
 <div class="container-fluid">
-   <div class="row">
-     <h1>Inspect statistics</h1>
-
-     <div class="well">
-       <%= @stats.to_hash.ai( html: true) %>
-     </div>
-     
-   </div>
-</div>
-
+  <div class="row">
+      <div id="statistics" style="display: block">
+        <img id="central-image" style="display: block; float: right;" alt="loading image" src="#broken"/>
+        <table border="orange dotted 1px" style="display: block; float: right;">
+          <tr>
+            <td>Year</td>
+            <td>Pics</td>
+            <td>Videos</td>
+            <td>Likes</td>
+            <td>Comments</td>
+            <td>Places</td>
+          </tr>
+        </table>
+      </div>
+      <div id="graphics">
+      </div>
+      <div id="thumbs">
+      </div>
+    </div>
+  </div>
 <script>
  window.stats = <%= @stats.to_hash.to_json %>;
  window.usage = <%= @stats.usage.to_json %>;
  window.media = <%= @stats.media.to_json %>;
 </script>
-

@@ -12,8 +12,8 @@
     window.INSTAGRAM_REDIRECT_URI = <%= CALLBACK_URL.inspect %>;
     localStorage.setItem('instagram_access_token', <%= session[:access_token].inspect %>);
   </script>
-  <script type="text/javascript" charset="utf-8" src="/jquery.min.js"></script>
-  <script type="text/javascript" charset="utf-8" src="/d3.min.js"></script>
-  <script type="text/javascript" charset="utf-8" src="/instajam.min.js"></script>
+  <script type="text/javascript" charset="utf-8" src="/vendor.js" ></script>
+  <script type="text/javascript" charset="utf-8" src="/instatistics.js" ></script>
+  <script type="text/javascript" charset="utf-8" src="/media.js" ></script>
   <script type="text/javascript" charset="utf-8" src="/application.js" ></script>
 </html>

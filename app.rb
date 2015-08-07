@@ -28,23 +28,18 @@ helpers do
   end
 end
 
-get '/application.js' do
-  coffee :application
+Dir["views/*.coffee"].each do |file|
+  name = file.split("/").last.split(".coffee").first
+  get "/#{name}.js" do
+    content_type 'application/javascript'
+    coffee  name.to_sym
+  end
 end
-
-get '/jquery.min.js' do
+get '/vendor.js' do
   content_type 'application/javascript'
-  IO.read("bower_components/jquery/dist/jquery.min.js")
-end
-
-get '/d3.min.js' do
-  content_type 'application/javascript'
-  IO.read("bower_components/d3/d3.min.js")
-end
-
-get '/instajam.min.js' do
-  content_type 'application/javascript'
-  IO.read("bower_components/instajam/dist/instajam.min.js")
+  %w(jquery/dist/jquery d3/d3 instajam/dist/instajam).map do |file|
+    IO.read("bower_components/#{file}.js")
+  end.join("\n")
 end
 
 get "/" do
