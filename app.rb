@@ -13,7 +13,7 @@ include LoadCacheHelper
 
 enable :sessions
 
-CALLBACK_URL = "http://localhost:4567/oauth/callback"
+CALLBACK_URL = ENV["INSTAGRAM_CALLBACK_URL"] || "http://localhost:4567/oauth/callback"
 
 Instagram.configure do |config|
   config.client_id = ENV["INSTAGRAM_CLIENT_ID"]
