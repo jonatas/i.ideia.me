@@ -57,8 +57,6 @@ get "/oauth/callback" do
 end
 
 get "/instatistics/:username" do
-  fetcher = InstagramUserMediaFetch.new(session[:access_token], params[:username])
-  @stats = Instatistics.new(fetcher.media)
   erb :"instatistics.html"
 end
 
