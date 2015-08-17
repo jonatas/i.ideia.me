@@ -5,6 +5,7 @@ gem "sinatra"
 gem "sinatra-contrib"
 gem "instagram"
 gem "awesome_print"
+gem "coffee-script"
 
 group :development, :test do
   gem "pry"
