@@ -5,7 +5,7 @@ class @Instatistics
     @tags = {}
     @fans = {}
     @locations = {}
-  process: (mediaEntry, callback) ->
+  process: (mediaEntry, _callback) ->
     @year = mediaEntry.date.getFullYear()
     @counter.likes += mediaEntry.likes.count
     @counter.comments += mediaEntry.comments.count
@@ -18,7 +18,7 @@ class @Instatistics
     @processFans(mediaEntry)
     @processLocations(mediaEntry)
     @processUsage(mediaEntry)
-    callback()
+    _callback()
 
   processTags: (media) ->
     self = @

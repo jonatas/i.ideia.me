@@ -53,10 +53,10 @@ end
 get "/oauth/callback" do
   response = Instagram.get_access_token(params[:code], :redirect_uri => CALLBACK_URL)
   session[:access_token] = response.access_token
-  redirect "/instatistics/#{client.user.username}"
+  redirect "/#{client.user.username}"
 end
 
-get "/instatistics/:username" do
+get "/:username" do
   erb :"instatistics.html"
 end
 

@@ -2,11 +2,10 @@ $(document).ready ->
   window.api = Instajam.init
     clientId: INSTAGRAM_CLIENT_ID,
     redirectUri: INSTAGRAM_REDIRECT_URI,
-    scope: ['basic', 'comments']
+    scope: ['basic']
 
   window.allMedia = []
   window.instatistics = new Instatistics()
-  window.filterTags = null
 
   $("table").on "click", ->
     $("img").show()
@@ -20,11 +19,13 @@ $(document).ready ->
         publishMedia(_media)
 
   fetchRecentUserMedia = (opts)->
-    api.user.self.media opts, (result) ->
-      parseResult(result)
-      if result.pagination.next_max_id?
-        #console.log(max_id: result.pagination.next_max_id)
-        fetchRecentUserMedia(max_id: result.pagination.next_max_id)
+    try
+      api.user.media window.location.pathname.substr(1), opts, (result) ->
+        parseResult(result)
+        if result.pagination.next_max_id?
+          fetchRecentUserMedia(max_id: result.pagination.next_max_id)
+    catch
+      fetchRecentUserMedia(opts)
 
 
   renderColumnsInstatistics = (instatistics) ->
