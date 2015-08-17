@@ -24,7 +24,8 @@ $(document).ready ->
         parseResult(result)
         if result.pagination.next_max_id?
           fetchRecentUserMedia(max_id: result.pagination.next_max_id)
-    catch
+    catch e
+      console.log "error", e, this
       fetchRecentUserMedia(opts)
 
 
