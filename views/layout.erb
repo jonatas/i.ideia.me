@@ -2,6 +2,15 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <style media="screen">
+      .big {
+        font-size: 250%;
+      }
+      .center {
+        width: 100%;
+        text-align: center;
+      }
+    </style>
     <title>Instatistics - ideia.me</title>
   </head>
   <body>
@@ -17,9 +26,9 @@
     <%= yield %>
   </body>
   <script type="text/javascript" charset="utf-8">
-    window.INSTAGRAM_CLIENT_ID = <%= ENV['INSTAGRAM_CLIENT_ID'].inspect %>;
     window.INSTAGRAM_REDIRECT_URI = <%= CALLBACK_URL.inspect %>;
-    localStorage.setItem('instagram_access_token', <%= session[:access_token].inspect %>);
+    window.INSTAGRAM_CLIENT_ID = <%= ENV['INSTAGRAM_CLIENT_ID'].inspect %>;
+  <% if session[:access_token] %>localStorage.setItem('instagram_access_token', <%= session[:access_token].inspect %>);<% end %>
   </script>
   <script type="text/javascript" charset="utf-8" src="/vendor.js" ></script>
   <script type="text/javascript" charset="utf-8" src="/instatistics.js" ></script>
