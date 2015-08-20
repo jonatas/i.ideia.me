@@ -1,6 +1,7 @@
 require "sinatra"
 require "sinatra/reloader" if development?
 require "instagram"
+require "json"
 
 $: << File.dirname(__FILE__)
 
@@ -55,6 +56,7 @@ get "/limits" do
   html << "Rate Limit = #{response.headers[:x_ratelimit_limit]}.  <br/>Calls Remaining = #{response.headers[:x_ratelimit_remaining]}"
   html
 end
+
 get "/:username" do
   erb :"instatistics.html"
 end
