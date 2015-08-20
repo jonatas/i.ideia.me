@@ -19,16 +19,16 @@ $(document).ready ->
         publishMedia(_media)
 
   fetchRecentUserMedia = (opts)->
+    username = window.location.pathname.substr(1)
     try
-      api.user.media window.location.pathname.substr(1), opts, (result) ->
+      api.user.media username, opts, (result) ->
         parseResult(result)
         if result.pagination.next_max_id?
           fetchRecentUserMedia(max_id: result.pagination.next_max_id)
     catch e
       console.log "error", e, this
       fetchRecentUserMedia(opts)
-
-
+      
   renderColumnsInstatistics = (instatistics) ->
     html = ""
     columns = [
