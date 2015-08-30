@@ -19,9 +19,8 @@ $(document).ready ->
         publishMedia(_media)
 
   fetchRecentUserMedia = (opts)->
-    username = window.location.pathname.substr(1)
     try
-      api.user.media username, opts, (result) ->
+      api.user.media userId, opts, (result) ->
         parseResult(result)
         if result.pagination.next_max_id?
           fetchRecentUserMedia(max_id: result.pagination.next_max_id)
@@ -99,7 +98,11 @@ $(document).ready ->
           newRow = $("<tr id='#{rowId}'>#{html}</tr>")[0].outerHTML
           $("#statistics > table").append(newRow)
 
-  fetchRecentUserMedia()
+
+  username = window.location.pathname.substr(1)
+  api.user.get username, (data) ->
+    window.userId = parseInt(data.data.id)
+    fetchRecentUserMedia()
   #window.years = ([year,size] for year,size of usage.year)
   plotUsage = (info, title, graphicId) ->
     selector = "#graphics > ##{graphicId}"

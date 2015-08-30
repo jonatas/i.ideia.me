@@ -10,4 +10,5 @@ gem "coffee-script"
 group :development, :test do
   gem "pry"
   gem "rspec"
+  gem "dotenv"
 end

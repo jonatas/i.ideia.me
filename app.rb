@@ -1,7 +1,12 @@
 require "sinatra"
-require "sinatra/reloader" if development?
 require "instagram"
 require "json"
+
+if development?
+  require "sinatra/reloader"
+  require 'dotenv'
+  Dotenv.load
+end
 
 $: << File.dirname(__FILE__)
 
