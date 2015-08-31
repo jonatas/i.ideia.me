@@ -6,8 +6,18 @@ $(document).ready ->
 
   window.allMedia = []
   window.instatistics = new Instatistics()
+  svg = d3.select("#graphics").append("svg")
+  svg
+    .attr("width", window.innerWidth)
+    .attr("height", 100)
+  window.myChart = new dimple.chart(svg, allMedia)
+  x = myChart.addTimeAxis("x",  "date")
+  x.timeInterval = 4
+  myChart.addMeasureAxis("y", "reactions")
+  myChart.addSeries(null, dimple.plot.bar)
+  myChart.draw()
 
-  $("table").on "click", ->
+  $("central-image").on "click", ->
     $("img").show()
     resizeToFit()
   window.idealSize = 50
@@ -17,13 +27,17 @@ $(document).ready ->
         _media = new Media(entry)
         allMedia.push(_media)
         publishMedia(_media)
+        myChart.draw() if allMedia.length < 100 || allMedia.length % 50 == 0
 
   fetchRecentUserMedia = (opts)->
     try
-      api.user.media userId, opts, (result) ->
+      api.user.media parseInt(user.id), opts, (result) ->
         parseResult(result)
         if result.pagination.next_max_id?
           fetchRecentUserMedia(max_id: result.pagination.next_max_id)
+        else
+          myChart.draw() 
+          $("#status").remove()
     catch e
       console.log "error", e, this
       fetchRecentUserMedia(opts)
@@ -71,13 +85,21 @@ $(document).ready ->
     image.src = lowImage.url
     image.media = media
     image.onload = ->
-      $("#central-image").attr("src",image.src)
       $("body").append(image)
+      $("#central-image").attr("src",image.src)
+      $("#caption").text(media.caption.text) if media.caption?.text?
+      $("#status").text("#{allMedia.length} (#{Math.round(allMedia.length / user.counts.media * 100)}%)")
+      if media.tags?
+        $("#tags").attr("src", media.tags.join(","))
+        $("#tags").attr("href", "##{media.tags.join(",")}")
       resizeToFit()
       if selectedImage?
         $(image).toggle(image.media.matchWith(selectedImage.media))
       $(image).on "mouseover", ->
         $("#central-image").attr("src", @src)
+        $("#caption").attr("src", @media.caption)
+        $("#tags").attr("src", @media.tags.join(","))
+        $("#tags").attr("href", "##{@media.tags.join(",")}")
       $(image).on "click", ->
         window.selectedImage = @
         filterSelectedImage()
@@ -96,57 +118,11 @@ $(document).ready ->
           row.html(html)
         else
           newRow = $("<tr id='#{rowId}'>#{html}</tr>")[0].outerHTML
-          $("#statistics > table").append(newRow)
+          #$("#statistics > table").append(newRow)
 
 
   username = window.location.pathname.substr(1)
   api.user.get username, (data) ->
-    window.userId = parseInt(data.data.id)
+    window.user = data.data
     fetchRecentUserMedia()
   #window.years = ([year,size] for year,size of usage.year)
-  plotUsage = (info, title, graphicId) ->
-    selector = "#graphics > ##{graphicId}"
-    if $(selector)[0]?
-      $(selector).empty()
-    else
-      $("#graphics").append($("<div id='#{graphicId}'></div>")[0].outerHTML)
-    h = 250
-    w = 500
-    padding = 2
-    data = []
-    x = []
-    y = []
-    maxY = 0
-    for key,value of info
-      data.push [key, value]
-      x.push key
-      y.push value
-      maxY = value if maxY < value
-    step = ((w - (data.length * padding)) / data.length)
-    d3.select(selector).append("h3").text title
-    svg = d3.select(selector).append("svg")
-    svg
-      .attr("width", w)
-      .attr("height", h)
-
-    svg.selectAll("rect")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("y", (row) -> row[1] / maxY * h )
-      .attr("x", (row,i) -> i * step)
-      .attr("fill", "black")
-      #.attr("width", 20)
-      .attr("width", step - padding )
-      .attr("height", h)
-
-    svg.selectAll("text")
-      .data(data)
-      .enter()
-      .append("text")
-      .text((e) -> e[0])
-      .attr("y", -> h - 20)
-      .attr("x", (item,i) -> (i * step) + step / 3)
-      .attr("fill", "white")
-      .attr("font-family", "sans-serif")
-      .attr("font-size", "11px")

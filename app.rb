@@ -36,7 +36,7 @@ end
 
 get '/vendor.js' do
   content_type 'application/javascript'
-  %w(jquery/dist/jquery d3/d3 instajam/dist/instajam).map do |file|
+  %w(jquery/dist/jquery d3/d3 dimple/dist/dimple.latest instajam/dist/instajam).map do |file|
     IO.read("bower_components/#{file}.js")
   end.join("\n")
 end

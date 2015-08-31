@@ -5,6 +5,9 @@ class @Media
       self[key] = value
     @title = @caption?.text
     @date = new Date(parseInt(@created_time)*1000)
+    @reactions = @likes.count + @comments.count
+    @monthYear = @monthYear()
+    @focusWord = if @tags? then @tags[0] || "notag" else "notag"
   matchWith: (other) ->
     return false if !other?
     return true if @tagSimilar(other).length > 0
@@ -32,10 +35,12 @@ class @Media
     word for word in @caption.text.split(" ") when word.length > 3
   captionSimilar: (other)->
     word for word in @captionWords() when word in other.captionWords()
+  monthYear: -> "#{(@date.getYear()-100)}-#{@date.getMonth()}"
   tagsAndCaptions: ->
     result = @tags || []
     if @caption? && @caption.text?
       result.push word for word in @caption.text.split(" ") when word.length > 4
+    result
   d3ize: (selector, withImage) ->
     @d3 ||= selector
      .append("svg:image")

@@ -1,21 +1,15 @@
 <div class="container-fluid">
   <div class="row">
-      <div id="statistics" style="display: block">
-        <img id="central-image" style="display: block; float: right;" alt="loading image" src="#broken"/>
-        <table border="orange dotted 1px" style="display: block; float: right;">
-          <tr>
-            <td>Year</td>
-            <td>Pics</td>
-            <td>Videos</td>
-            <td>Likes</td>
-            <td>Comments</td>
-            <td>Places</td>
-          </tr>
-        </table>
-      </div>
-      <div id="graphics">
+      <div id="statistics" style="display: block;">
+        <div>
+        <span id="status"></span>
+        <span id="caption"></span>
+        </div>
+        <img id="central-image" style="display: block; float: left;" alt="loading image" src=""/>
       </div>
       <div id="thumbs">
+      </div>
+      <div id="graphics" style="position:fixed;bottom:0;opacity: 0.5" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.5">
       </div>
     </div>
   </div>
