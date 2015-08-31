@@ -97,8 +97,7 @@ $(document).ready ->
         $(image).toggle(image.media.matchWith(selectedImage.media))
       $(image).on "mouseover", ->
         $("#central-image").attr("src", @src)
-        $("#caption").attr("src", @media.caption)
-        $("#tags").attr("src", @media.tags.join(","))
+        $("#caption").text(@media.caption.text) if @media.caption?.text?
         $("#tags").attr("href", "##{@media.tags.join(",")}")
       $(image).on "click", ->
         window.selectedImage = @
