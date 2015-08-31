@@ -17,7 +17,7 @@ $(document).ready ->
   myChart.addSeries(null, dimple.plot.bar)
   myChart.draw()
 
-  $("central-image").on "click", ->
+  $("#central-image").on "click", ->
     $("img").show()
     resizeToFit()
   window.idealSize = 50
