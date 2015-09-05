@@ -5,35 +5,19 @@ $(document).ready ->
     redirectUri: INSTAGRAM_REDIRECT_URI,
     scope: ['basic']
 
+  window.startedAt = new Date()
   window.allMedia = []
   window.instatistics = new Instatistics()
-  svg = d3.select("#graphics").append("svg")
-  svg
-    .attr("width", window.innerWidth)
-    .attr("height", 100)
-  window.timelineChart = new dimple.chart(svg, allMedia)
-  x = timelineChart.addTimeAxis("x",  "date")
-  x.timeInterval = 4
-  timelineChart.addMeasureAxis("y", "reactions")
-  timelineChart.addSeries(null, dimple.plot.bar)
-  timelineChart.draw()
+  mozaic = d3.select("body").append("svg")
+    .attr("width", window.innerWidth - 320)
+    .attr("height",  window.innerWidth - 320 - 100)
+    .append("g")
 
-  getDateFrom = (element) ->
-    [ monthName, day, year, hour, min, second ] = element.id.split("-").slice(3,9)
-    month = MONTH_NAMES.indexOf(monthName)
-    if month < 0
-      console.log("wtf month: #{monthName} => #{month}")
-      return null
-    console.log("new date",parseInt(year), month, parseInt(day), parseInt(hour), parseInt(min), parseInt(second))
-    date = new Date(parseInt(year), month, parseInt(day), parseInt(hour), parseInt(min), parseInt(second))
-    console.log element.id, date
-    date
   setupMouseOver = ->
     $(".dimple-series-0").on "mouseover", (e) ->
-      date = getDateFrom(e.toElement)
+      date = e.toElement.__data__.date
       return if !date?
-      for img in $("img")
-        media = img.media
+      for media in allMedia
         if media? and date.getTime() is media.date.getTime()
           $('#central-image').attr('src', img.src)
 
@@ -45,26 +29,20 @@ $(document).ready ->
     if entries = result.data
       for entry in entries
         _media = new Media(entry)
-        allMedia.push(_media)
         publishMedia(_media)
         if allMedia.length < 100 || allMedia.length % 50 == 0
-          timelineChart.draw()
           setupMouseOver()
 
 
   fetchRecentUserMedia = (opts)->
-    try
-      api.user.media parseInt(user.id), opts, (result) ->
-        parseResult(result)
-        if result.pagination.next_max_id?
-          fetchRecentUserMedia(max_id: result.pagination.next_max_id)
-        else
-          timelineChart.draw()
-          $("#status").remove()
-    catch e
-      console.log "error", e, this
-      fetchRecentUserMedia(opts)
-      
+    onSuccess = (result) ->
+      parseResult(result)
+      if result.pagination.next_max_id?
+        fetchRecentUserMedia(max_id: result.pagination.next_max_id)
+
+    onError = -> fetchRecentUserMedia(opts)
+    api.user.media parseInt(user.id), opts, onSuccess, onError
+
   renderColumnsInstatistics = (instatistics) ->
     html = ""
     columns = [
@@ -86,32 +64,41 @@ $(document).ready ->
           $(_img).toggle(media.matchWith(_img.media))
       resizeToFit()
   window.resizeToFit = ->
-    imgs = $("img:visible")
     defaultSize = 320
     ww = window.innerWidth
     wh = window.innerHeight
     areaInPixels = ww * wh
-    window.idealSize = parseInt(Math.sqrt( areaInPixels / imgs.length ))
-    imgs.attr(width: idealSize, height: idealSize)
+    window.idealSize = parseInt(Math.sqrt( areaInPixels / user.counts.media  ))
     $("#central-image").attr(width: defaultSize, height: defaultSize)
 
   window.onresize = resizeToFit
+
   publishMedia = (media) ->
-    year = media.date.getFullYear()
-    if !instatistics[year]?
-      #console.log("happy new year #{year}")
-      window.instatistics[year] = new Instatistics()
-    lowImage = media.images.low_resolution
     image = new Image()
-    image.width = idealSize
-    image.height = idealSize
-    image.src = lowImage.url
-    image.media = media
+    image.src = media.images.thumbnail.url
     image.onload = ->
-      $("body").append(image)
+      allMedia.push(media)
       $("#central-image").attr("src",image.src)
+      x = d3.time.scale().domain(d3.extent(allMedia, (d) -> d.date)).range([0,window.innerWidth])
+      y = d3.scale.linear().domain(d3.extent(allMedia, (d) -> d.date.getHours())).range([0,window.innerHeight])
+      xAxis = d3.svg.axis().scale(x).orient('bottom')
+      mozaic.selectAll("g.x axis").append('g').attr('class', 'x axis').call(xAxis)
+      mozaic
+        .selectAll("image")
+        .data(allMedia)
+        .enter()
+        .append("image")
+        .attr("xlink:href", (d) -> d.images.thumbnail.url)
+        .attr("x", (d) -> 100+x(d.date))
+        .attr("y", (d) -> y(d.date.getHours()))
+        .attr("width", (d) -> "#{idealSize}px")
+        .attr("height", (d) ->"#{idealSize}px" ) if allMedia.length % 10 == 0
+
       $("#caption").text(media.caption.text) if media.caption?.text?
-      $("#status").text("#{allMedia.length} (#{Math.round(allMedia.length / user.counts.media * 100)}%)")
+      percent = Math.round(allMedia.length / user.counts.media * 100)
+      $("#status").text("#{allMedia.length} (#{percent}%)")
+      if percent == 100
+        $("#status").text("#{allMedia.length} files in #{((new Date()).getTime() - startedAt.getTime()) / 1000} seconds")
       if media.tags?
         $("#tags").attr("src", media.tags.join(","))
         $("#tags").attr("href", "##{media.tags.join(",")}")
@@ -126,21 +113,6 @@ $(document).ready ->
         window.selectedImage = @
         filterSelectedImage()
 
-        #window.open @media.link, '_blank'
-
-      #graphicId = "graphic-#{year}"
-      #plotUsage(current.usage.hours, "(#{year}) per hour", graphicId)
-      #plotUsage(current.usage.weekDay, "(#{year}) per week day", graphicId)
-      #plotUsage(current.usage.month, "(#{year}) per month", graphicId)
-      instatistics[year].process media, ->
-        rowId = "year-#{year}"
-        html = renderColumnsInstatistics(instatistics[year])
-        row = $("##{rowId}")
-        if row[0]?
-          row.html(html)
-        else
-          newRow = $("<tr id='#{rowId}'>#{html}</tr>")[0].outerHTML
-          #$("#statistics > table").append(newRow)
 
 
   username = window.location.pathname.substr(1)
