@@ -1,3 +1,4 @@
+MONTH_NAMES = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "ago", "sep","oct","nov","dec"]
 $(document).ready ->
   window.api = Instajam.init
     clientId: INSTAGRAM_CLIENT_ID,
@@ -10,12 +11,31 @@ $(document).ready ->
   svg
     .attr("width", window.innerWidth)
     .attr("height", 100)
-  window.myChart = new dimple.chart(svg, allMedia)
-  x = myChart.addTimeAxis("x",  "date")
+  window.timelineChart = new dimple.chart(svg, allMedia)
+  x = timelineChart.addTimeAxis("x",  "date")
   x.timeInterval = 4
-  myChart.addMeasureAxis("y", "reactions")
-  myChart.addSeries(null, dimple.plot.bar)
-  myChart.draw()
+  timelineChart.addMeasureAxis("y", "reactions")
+  timelineChart.addSeries(null, dimple.plot.bar)
+  timelineChart.draw()
+
+  getDateFrom = (element) ->
+    [ monthName, day, year, hour, min, second ] = element.id.split("-").slice(3,9)
+    month = MONTH_NAMES.indexOf(monthName)
+    if month < 0
+      console.log("wtf month: #{monthName} => #{month}")
+      return null
+    console.log("new date",parseInt(year), month, parseInt(day), parseInt(hour), parseInt(min), parseInt(second))
+    date = new Date(parseInt(year), month, parseInt(day), parseInt(hour), parseInt(min), parseInt(second))
+    console.log element.id, date
+    date
+  setupMouseOver = ->
+    $(".dimple-series-0").on "mouseover", (e) ->
+      date = getDateFrom(e.toElement)
+      return if !date?
+      for img in $("img")
+        media = img.media
+        if media? and date.getTime() is media.date.getTime()
+          $('#central-image').attr('src', img.src)
 
   $("#central-image").on "click", ->
     $("img").show()
@@ -27,7 +47,10 @@ $(document).ready ->
         _media = new Media(entry)
         allMedia.push(_media)
         publishMedia(_media)
-        myChart.draw() if allMedia.length < 100 || allMedia.length % 50 == 0
+        if allMedia.length < 100 || allMedia.length % 50 == 0
+          timelineChart.draw()
+          setupMouseOver()
+
 
   fetchRecentUserMedia = (opts)->
     try
@@ -36,7 +59,7 @@ $(document).ready ->
         if result.pagination.next_max_id?
           fetchRecentUserMedia(max_id: result.pagination.next_max_id)
         else
-          myChart.draw() 
+          timelineChart.draw()
           $("#status").remove()
     catch e
       console.log "error", e, this
