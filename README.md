@@ -7,5 +7,16 @@ It has basic statistics built with d3.js about 'reactions'.
     reactions = likes + comments
 
 
+## See it working
+
+http://i.ideia.me
+
+## Running locally
+
+    bundle install
+    ruby app.rb
+
+
+
 
 
